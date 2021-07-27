@@ -1,0 +1,50 @@
+#importing libraries
+library(dplyr)
+library(ggplot2)
+
+#iris dataset
+df<-ds<-iris
+View(df)
+
+# Data preprocessing 
+# Data visualization (Box Plots)
+df %>% ggplot(mapping = aes(Species,Sepal.Length))+geom_boxplot(outlier.colour = "red")
+v<-ds %>% select(Sepal.Length,Species) %>% filter(Species=="virginica") 
+df$Sepal.Length[df$Sepal.Length<5.3&df$Species=="virginica"]<-mean(v$Sepal.Length)
+u<-ds %>% filter(Sepal.Length>7.7&Species=="virginica")
+df<-anti_join(df,u)
+df %>% ggplot(mapping = aes(Species,Sepal.Width))+geom_boxplot(outlier.colour = "red")
+v1<-ds %>% select(Sepal.Width,Species) %>% filter(Species=="setosa")
+v1<-v1 %>% filter(Sepal.Width<2.7)
+df<-anti_join(df,v1)
+u1<-df %>% filter(Sepal.Width<2.3&Species=="virginica")
+df<-anti_join(df,u1)
+df %>% ggplot(mapping = aes(Species,Petal.Length))+geom_boxplot(outlier.colour = "red")
+v2<-df %>% filter(Petal.Length==1&Species=="setosa")
+df<-anti_join(df,v2)
+k<-ds %>% select(Petal.Length,Species) %>% filter(Species=="versicolor") 
+k<-mean(k$Petal.Length)
+df$Petal.Length[df$Petal.Length==3.0&df$Species=="versicolor"]<-k
+df %>% ggplot(mapping = aes(Species,Petal.Width))+geom_boxplot(outlier.colour = "red")
+v3<-df %>% select(Petal.Width,Species) %>% filter(Species=="setosa")
+df %>% filter(Petal.Width>0.4&Species=="setosa")
+df$Petal.Width[df$Petal.Width>=0.5&df$Species=="setosa"]<- mean(v3$Petal.Width)
+
+# Splitting into Testing and Training
+split<-df$Species %>% sample.split(0.8)
+train<-subset(df,split==TRUE)
+test<-test1<-subset(df,split==FALSE)
+test<-test[-5]
+
+# Training the model
+model<-rpart(Species~.,train,)
+model
+
+# Plotting the trained model
+rpart.plot(model,type=1,fallen.leaves = TRUE,extra=1)
+
+# Prediction of test data
+prediction<-predict(model,test,type="vector")
+
+# Confusion matrix
+table(test1$Species,prediction)
