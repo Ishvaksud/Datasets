@@ -1,9 +1,34 @@
 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ANALYSIS:
 
+1) Most of the people were Males as compared to Females and Transgenders with Male percentage as 89 %.
 
+2) Most of the people were killed were European-American/White occupying around 33.7 %.
 
+3) In every Race males were killed the most.
 
+4) Most of the people were killed by gunshots which accounts for almost 70.6 %.
 
+5) California has the most number of deaths which accounts for 15.9 %.
+
+6) LAPD (Los angeles police dept) had the most number of innocent deaths.
+
+7) Age has a lot of outliers with Max value 107 whereas the third quantile is 43. Therefore according to finding outliers 
+Outliers after 3rd quantile=Q3+1.5IQR
+=43+1.5*18=70
+
+70 being the upper range for outliers
+
+8) Most of the people who died had no Mental illness.
+
+9) Most of the use of force was a deadly force.
+
+10) Most people died on first of every month, July had the most number of deaths and 2020 being the year with most deaths.
+
+11) 19/02/2002(d/m/y) has the most number of deaths
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 library(readr)
 library(ggplot2)
