@@ -1,0 +1,93 @@
+
+
+
+
+
+
+
+library(readr)
+library(ggplot2)
+library(dplyr)
+
+data=read_csv("Downloads/Innocent Deaths caused by Police (All time).csv")
+
+df<-data %>% arrange(`Unique ID`)
+df %>% View()
+
+summary(data)
+df<-df %>% select(-c(1,2,6,8,13,18,19,20,21,22,23,26))
+
+df %>% is.na() %>% colSums()
+
+#exploratory data analysis
+
+#----Gender-----
+ggplot(df,mapping = aes(x=Gender,fill=Gender))+geom_bar()
+df %>% count(Gender)
+df %>% group_by(Gender) %>% summarise((n()*100)/nrow(df))
+#----Race----
+df %>% group_by(Race) %>% summarise(mean=(n()*100)/nrow(df)) %>%arrange(desc(mean))
+ggplot(df,aes(Race,fill=Race))+geom_bar()+
+theme(axis.text.x = element_text(angle=65, vjust=0.6))
+
+df %>% group_by(Race,Gender) %>% summarize(count=n()) %>%filter((Gender=="Male")|(Gender=="Female")) %>% View()
+
+#---Highest level of force----
+df %>% group_by(`Highest level of force`) %>% 
+summarise(count=n(),mean=(n()*100)/nrow(df)) %>% arrange(desc(count))
+
+ggplot(df,aes(`Highest level of force`,fill=`Highest level of force`))+geom_bar()+
+  theme(axis.text.x = element_text(angle=65, vjust=0.6))
+
+df %>% group_by(Race,`Highest level of force`) %>% summarize(count=n()) %>% 
+ arrange(Race,desc(count)) %>%  View()
+
+df %>% group_by(`Highest level of force`,Gender) %>% summarize(count=n()) %>% 
+  arrange(desc(count)) %>%  View()
+
+#----State---- 
+df %>% group_by(State) %>% summarise(count=n(),mean=(n()*100)/nrow(df)) %>% arrange(desc(count)) 
+df %>% group_by(State,Race) %>% summarise(count=n()) %>% View()
+
+#----Agencies involved----
+df %>% group_by(`Agency or agencies involved`) %>% summarise(count=n()) %>% arrange(desc(count))
+
+#----Age----
+summary(df$Age)
+df$Age<-ifelse(is.na(df$Age),35.25,df$Age)
+df %>% ggplot(aes(x=Age))+geom_histogram(bins=50,fill="Blue")
+df %>% ggplot(aes(x=Age))+geom_density()
+df %>% ggplot(aes(x=Age)) + geom_boxplot()
+
+#---Foreknowldge of Mental illness----
+unique(df$`Foreknowledge of mental illness`)
+df %>% group_by(`Foreknowledge of mental illness`) %>% summarise(count=n())
+
+#----Intended use of Force---
+unique(df$`Intended use of force (Developing)`)
+df %>% ggplot(aes(`Intended use of force (Developing)`))+geom_bar()+ 
+  theme(axis.text.x = element_text(angle=65, vjust=0.6))
+
+#---Date of Injury---
+typeof(df$`Date of injury resulting in death (month/day/year)`)
+
+dates <- as.POSIXct(df$`Date of injury resulting in death (month/day/year)`,format = "%m/%d/%Y")
+df$Year<-format(dates, format="%Y")
+df$Day<-format(dates,format="%d")
+df$Month<-format(dates,format = "%m")
+df<-df %>% select(-c(`Date of injury resulting in death (month/day/year)`))
+
+df %>% ggplot(aes(Day,fill=Day))+geom_bar()
+df %>% group_by(Day) %>% summarise(count=n()) %>% arrange(desc(count)) %>% 
+  View()
+
+df %>% group_by(Month) %>% summarise(count=n()) %>% arrange(desc(count)) %>% 
+  View()
+
+df %>% group_by(Year) %>% summarise(count=n()) %>% arrange(desc(count)) %>% 
+  View()
+
+df %>% group_by(Year,Month,Day) %>% summarise(count=n()) %>% arrange(desc(count)) %>% 
+  View()
+
+
